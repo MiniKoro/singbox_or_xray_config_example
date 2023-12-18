@@ -1,0 +1,609 @@
+{
+    "policy":
+    {
+        "system":
+        {
+            "statsOutboundUplink": true,
+            "statsOutboundDownlink": true
+        }
+    },
+    "log":
+    {
+        "access": "",
+        "error": "",
+        "loglevel": "warning"
+    },
+    "api":
+    {
+        "tag": "api",
+        "services":
+        [
+            "StatsService"
+        ]
+    },
+    "dns":
+    {
+        "hosts":
+        {
+            "domain:googleapis.cn": "googleapis.com",
+            "dns.google": "8.8.8.8"
+        },
+        "servers":
+        [
+            {
+                "address": "1.1.1.1",
+                "domains":
+                [
+                    "geosite:geolocation-!cn"
+                ]
+            },
+            {
+                "address": "223.5.5.5",
+                "domains":
+                [
+                    "geosite:cn"
+                ],
+                "expectIPs":
+                [
+                    "geoip:cn"
+                ]
+            },
+            "https://dns.google/dns-query",
+            "119.29.29.29",
+            "localhost"
+        ]
+    },
+    "routing":
+    {
+        "domainMatcher": "linear",
+        "domainStrategy": "IPIfNonMatch",
+        "rules":
+        [
+            {
+                "type": "field",
+                "inboundTag":
+                [
+                    "api"
+                ],
+                "outboundTag": "api"
+            },
+            {
+                "type": "field",
+                "inboundTag":
+                [
+                    "socks-in-1111"
+                ],
+                "outboundTag": "us-isp-dmit"
+            },
+            {
+                "type": "field",
+                "inboundTag":
+                [
+                    "socks-in-2222"
+                ],
+                "outboundTag": "us-dmit"
+            },
+            {
+                "type": "field",
+                "inboundTag":
+                [
+                    "socks-in-3333"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "type": "field",
+                "inboundTag":
+                [
+                    "socks-in-4444"
+                ],
+                "outboundTag": "us-cc"
+            },
+            {
+                "type": "field",
+                "inboundTag":
+                [
+                    "socks-in-5555"
+                ],
+                "outboundTag": "isp"
+            },
+            {
+                "type": "field",
+                "domain":
+                [
+                    "geosite:category-ads-all"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "domain":
+                [
+                    "geosite:cn"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "ip":
+                [
+                    "geoip:cn",
+                    "geoip:private",
+                    "119.29.29.29",
+                    "223.5.5.5"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "protocol":
+                [
+                    "bittorrent"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "domain":
+                [
+                    "geosite:geolocation-!cn",
+                    "domain:googleapis.cn",
+                    "dns.google"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "type": "field",
+                "ip":
+                [
+                    "1.1.1.1",
+                    "8.8.8.8"
+                ],
+                "outboundTag": "proxy"
+            }
+        ]
+    },
+    "inbounds":
+    [
+        {
+            "tag": "socks",
+            "port": 4040,
+            "listen": "127.0.0.1",
+            "protocol": "socks",
+            "sniffing":
+            {
+                "enabled": false,
+                "destOverride":
+                [
+                    "http",
+                    "tls"
+                ],
+                "routeOnly": true
+            },
+            "settings":
+            {
+                "auth": "noauth",
+                "udp": true,
+                "allowTransparent": false
+            }
+        },
+        {
+            "tag": "http",
+            "port": 4041,
+            "listen": "127.0.0.1",
+            "protocol": "http",
+            "sniffing":
+            {
+                "enabled": false,
+                "destOverride":
+                [
+                    "http",
+                    "tls"
+                ],
+                "routeOnly": true
+            },
+            "settings":
+            {
+                "auth": "noauth",
+                "udp": true,
+                "allowTransparent": false
+            }
+        },
+        {
+            "tag": "socks-in-1111",
+            "port": 1111,
+            "listen": "127.0.0.1",
+            "protocol": "socks",
+            "sniffing":
+            {
+                "enabled": false,
+                "destOverride":
+                [
+                    "http",
+                    "tls"
+                ],
+                "routeOnly": true
+            },
+            "settings":
+            {
+                "auth": "noauth",
+                "udp": true,
+                "allowTransparent": false
+            }
+        },
+        {
+            "tag": "socks-in-2222",
+            "port": 2222,
+            "listen": "127.0.0.1",
+            "protocol": "socks",
+            "sniffing":
+            {
+                "enabled": false,
+                "destOverride":
+                [
+                    "http",
+                    "tls"
+                ],
+                "routeOnly": true
+            },
+            "settings":
+            {
+                "auth": "noauth",
+                "udp": true,
+                "allowTransparent": false
+            }
+        },
+        {
+            "tag": "socks-in-3333",
+            "port": 3333,
+            "listen": "127.0.0.1",
+            "protocol": "socks",
+            "sniffing":
+            {
+                "enabled": false,
+                "destOverride":
+                [
+                    "http",
+                    "tls"
+                ],
+                "routeOnly": true
+            },
+            "settings":
+            {
+                "auth": "noauth",
+                "udp": true,
+                "allowTransparent": false
+            }
+        },
+        {
+            "tag": "socks-in-4444",
+            "port": 4444,
+            "listen": "127.0.0.1",
+            "protocol": "socks",
+            "sniffing":
+            {
+                "enabled": false,
+                "destOverride":
+                [
+                    "http",
+                    "tls"
+                ],
+                "routeOnly": true
+            },
+            "settings":
+            {
+                "auth": "noauth",
+                "udp": true,
+                "allowTransparent": false
+            }
+        },
+        {
+            "tag": "socks-in-5555",
+            "port": 5555,
+            "listen": "127.0.0.1",
+            "protocol": "socks",
+            "sniffing":
+            {
+                "enabled": false,
+                "destOverride":
+                [
+                    "http",
+                    "tls"
+                ],
+                "routeOnly": true
+            },
+            "settings":
+            {
+                "auth": "noauth",
+                "udp": true,
+                "allowTransparent": false
+            }
+        },
+        {
+            "tag": "api",
+            "port": 6969,
+            "listen": "127.0.0.1",
+            "protocol": "dokodemo-door",
+            "settings":
+            {
+                "udp": false,
+                "address": "127.0.0.1",
+                "allowTransparent": false
+            }
+        }
+    ],
+    "outbounds":
+    [
+        {
+            "protocol": "freedom",
+            "tag": "direct",
+            "settings":
+            {
+                "domainStrategy": "UseIP"
+            }
+        },
+        {
+            "tag": "proxy",
+            "protocol": "vless",
+            "settings":
+            {
+                "vnext":
+                [
+                    {
+                        "address": "域名",
+                        "port": 6666,
+                        "users":
+                        [
+                            {
+                                "id": "uuid",
+                                "alterId": 0,
+                                "email": "t@t.tt",
+                                "security": "auto",
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings":
+            {
+                "network": "tcp",
+                "security": "reality",
+                "realitySettings":
+                {
+                    "serverName": "偷取的域名",
+                    "fingerprint": "chrome",
+                    "show": false,
+                    "publicKey": "publicKey",
+                    "shortId": "shortId",
+                    "spiderX": "/"
+                }
+            },
+            "mux":
+            {
+                "enabled": false,
+                "concurrency": -1
+            }
+        },
+        {
+            "tag": "us-dmit",
+            "protocol": "vless",
+            "settings":
+            {
+                "vnext":
+                [
+                    {
+                        "address": "域名",
+                        "port": 15151,
+                        "users":
+                        [
+                            {
+                                "id": "uuid",
+                                "alterId": 0,
+                                "email": "t@t.tt",
+                                "security": "auto",
+                                "encryption": "none"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings":
+            {
+                "network": "grpc",
+                "security": "reality",
+                "realitySettings":
+                {
+                    "serverName": "偷取的域名",
+                    "fingerprint": "firefox",
+                    "show": false,
+                    "publicKey": "publicKey",
+                    "shortId": "shortId",
+                    "spiderX": "/"
+                },
+                "grpcSettings":
+                {
+                    "serviceName": "",
+                    "multiMode": false,
+                    "idle_timeout": 60,
+                    "health_check_timeout": 20,
+                    "permit_without_stream": false,
+                    "initial_windows_size": 0
+                }
+            },
+            "mux":
+            {
+                "enabled": false,
+                "concurrency": -1
+            }
+        },
+        {
+            "tag": "us-isp-dmit",
+            "protocol": "vless",
+            "settings":
+            {
+                "vnext":
+                [
+                    {
+                        "address": "域名",
+                        "port": 14141,
+                        "users":
+                        [
+                            {
+                                "id": "uuid",
+                                "alterId": 0,
+                                "email": "t@t.tt",
+                                "security": "auto",
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings":
+            {
+                "network": "tcp",
+                "security": "reality",
+                "realitySettings":
+                {
+                    "serverName": "serverName",
+                    "fingerprint": "firefox",
+                    "show": false,
+                    "publicKey": "publicKey",
+                    "shortId": "shortId",
+                    "spiderX": "/"
+                }
+            },
+            "mux":
+            {
+                "enabled": false,
+                "concurrency": -1
+            }
+        },
+        {
+            "tag": "us-cc",
+            "protocol": "vless",
+            "settings":
+            {
+                "vnext":
+                [
+                    {
+                        "address": "域名",
+                        "port": 11111,
+                        "users":
+                        [
+                            {
+                                "id": "uuid",
+                                "alterId": 0,
+                                "email": "t@t.tt",
+                                "security": "auto",
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings":
+            {
+                "network": "tcp",
+                "security": "reality",
+                "realitySettings":
+                {
+                    "serverName": "偷取域名",
+                    "fingerprint": "chrome",
+                    "show": false,
+                    "publicKey": "publicKey",
+                    "shortId": "shortId",
+                    "spiderX": "/"
+                }
+            },
+            "mux":
+            {
+                "enabled": false,
+                "concurrency": -1
+            }
+        },
+        {
+            "tag": "isp",
+            "protocol": "socks",
+            "settings":
+            {
+                "servers":
+                [
+                    {
+                        "address": "ip",
+                        "port": port,
+                        "users":
+                        [
+                            {
+                                "user": "user",
+                                "pass": "pass"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings":
+            {
+                "sockopt":
+                {
+                    "dialerProxy": "us-cc"
+                }
+            }
+        },
+        {
+            "tag": "sg",
+            "protocol": "vmess",
+            "settings":
+            {
+                "vnext":
+                [
+                    {
+                        "address": "ip",
+                        "port": 80,
+                        "users":
+                        [
+                            {
+                                "id": "uuid",
+                                "alterId": 0,
+                                "email": "t@t.tt",
+                                "security": "auto"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings":
+            {
+                "network": "ws",
+                "wsSettings":
+                {
+                    "path": "path",
+                    "headers":
+                    {
+                        "Host": "host"
+                    }
+                }
+            },
+            "mux":
+            {
+                "enabled": false,
+                "concurrency": -1
+            }
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block",
+            "settings":
+            {
+                "response":
+                {
+                    "type": "http"
+                }
+            }
+        }
+    ]
+}

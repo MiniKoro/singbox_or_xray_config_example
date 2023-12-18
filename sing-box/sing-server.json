@@ -1,0 +1,318 @@
+{
+    "log":
+    {
+        "disabled": false,
+        "level": "info",
+        "timestamp": true,
+        "output": "/app/singbox/box.log"
+    },
+    "dns":
+    {
+        "servers":
+        [
+            {
+                "tag": "cloudflare",
+                "address": "https://1.1.1.1/dns-query",
+                "strategy": "ipv4_only",
+                "detour": "direct"
+            },
+            {
+                "tag": "block",
+                "address": "rcode://success"
+            }
+        ],
+        "rules":
+        [
+            {
+                "rule_set":
+                [
+                    "geoip-cn",
+                    "geosite-cn",
+                    "geosite-category-ads-all"
+                ],
+                "server": "block"
+            }
+        ],
+        "final": "cloudflare",
+        "strategy": "",
+        "disable_cache": false,
+        "disable_expire": false
+    },
+    "inbounds":
+    [
+        {
+            "sniff": true,
+            "sniff_override_destination": true,
+            "type": "vless",
+            "tag": "vless-in-11111",
+            "listen": "::",
+            "listen_port": 11111,
+            "users":
+            [
+                {
+                    "uuid": "uuid",
+                    "flow": "xtls-rprx-vision"
+                }
+            ],
+            "tls":
+            {
+                "enabled": true,
+                "server_name": "偷取的域名",
+                "reality":
+                {
+                    "enabled": true,
+                    "handshake":
+                    {
+                        "server": "偷取的域名",
+                        "server_port": 443
+                    },
+                    "private_key": "你的private_key",
+                    "short_id":
+                    [
+                        "你的short_id"
+                    ]
+                }
+            },
+            "multiplex":
+            {
+                "enabled": true,
+                "padding": false,
+                "brutal":
+                {
+                    "enabled": true,
+                    "up_mbps": 500,
+                    "down_mbps": 500
+                }
+            }
+        },
+        {
+            "type": "tuic",
+            "tag": "tuic-in-23232",
+            "listen": "::",
+            "listen_port": 23232,
+            "users":
+            [
+                {
+                    "uuid": "你的uuid",
+                    "password": "你的password"
+                }
+            ],
+            "congestion_control": "bbr",
+            "tls":
+            {
+                "enabled": true,
+                "server_name": "域名",
+                "alpn":
+                [
+                    "h3"
+                ],
+                "certificate_path": "你的certificate_path",
+                "key_path": "你的key_path"
+            }
+        },
+        {
+            "type": "hysteria2",
+            "tag": "hy2-in-22222",
+            "listen": "::",
+            "listen_port": 22222,
+            "up_mbps": 200,
+            "down_mbps": 200,
+            "masquerade": "https://pan.aaaab3n.moe/",
+            "obfs":
+            {
+                "type": "salamander",
+                "password": "你的password"
+            },
+            "users":
+            [
+                {
+                    "password": "你的password"
+                }
+            ],
+            "tls":
+            {
+                "enabled": true,
+                "alpn":
+                [
+                    "h3"
+                ],
+                "certificate_path": "你的certificate_path",
+                "key_path": "你的key_path"
+            }
+        }
+    ],
+    "outbounds":
+    [
+        {
+            "type": "direct",
+            "tag": "direct"
+        },
+        {
+            "type": "block",
+            "tag": "block"
+        },
+        {
+            "type": "dns",
+            "tag": "dns-out"
+        },
+        {
+            "type": "direct",
+            "tag": "warp-IPv4-out",
+            "detour": "wireguard-out",
+            "domain_strategy": "ipv4_only"
+        },
+        {
+            "type": "direct",
+            "tag": "warp-IPv6-out",
+            "detour": "wireguard-out",
+            "domain_strategy": "ipv6_only"
+        },
+        {
+            "type": "direct",
+            "tag": "warp-IPv6-prefer-out",
+            "detour": "wireguard-out",
+            "domain_strategy": "prefer_ipv6"
+        },
+        {
+            "type": "direct",
+            "tag": "warp-IPv4-prefer-out",
+            "detour": "wireguard-out",
+            "domain_strategy": "prefer_ipv4"
+        },
+        {
+            "type": "wireguard",
+            "tag": "wireguard-out",
+            "server": "engage.cloudflareclient.com",
+            "server_port": 2408,
+            "local_address":
+            [
+                "172.16.0.2/32",
+                "2606:4700:110:86a2:b90:c3f3:88ff:6188/128"
+            ],
+            "private_key": "你的private_key",
+            "peer_public_key": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+            "reserved":
+            [
+                "reserved"
+            ],
+            "mtu": 1280
+        }
+    ],
+    "route":
+    {
+        "final": "direct",
+        "rules":
+        [
+            {
+                "protocol": "dns",
+                "outbound": "dns-out"
+            },
+            {
+                "ip_is_private": true,
+                "outbound": "direct"
+            },
+            {
+                "rule_set":
+                [
+                    "geoip-cn",
+                    "geosite-cn",
+                    "geosite-category-ads-all"
+                ],
+                "outbound": "block"
+            },
+            {
+                "rule_set":
+                [
+                    "geosite-netflix",
+                    "geosite-disney"
+                ],
+                "outbound": "warp-IPv6-out"
+            },
+            {
+                "rule_set":
+                [
+                    "geosite-openai",
+                    "geosite-claude"
+                ],
+                "outbound": "warp-IPv4-out"
+            },
+            {
+                "domain_keyword":
+                [
+                    "ipaddress"
+                ],
+                "outbound": "warp-IPv6-out"
+            }
+        ],
+        "rule_set":
+        [
+            {
+                "tag": "geoip-cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-geolocation-!cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-category-ads-all",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-openai",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/openai.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-netflix",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/netflix.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-disney",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/disney.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-claude",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/bm7/Claude.srs",
+                "download_detour": "direct"
+            }
+        ],
+        "auto_detect_interface": true
+    },
+    "experimental":
+    {
+        "cache_file":
+        {
+            "enabled": true,
+            "path": "cache.db",
+            "cache_id": "mycacheid",
+            "store_fakeip": true
+        }
+    }
+}
