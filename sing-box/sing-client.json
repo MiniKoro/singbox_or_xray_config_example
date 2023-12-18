@@ -167,7 +167,7 @@
             "tls":
             {
                 "enabled": true,
-                "server_name": "偷取的域名",
+                "server_name": "server_name",
                 "utls":
                 {
                     "enabled": true,
@@ -176,7 +176,7 @@
                 "reality":
                 {
                     "enabled": true,
-                    "public_key": "公钥",
+                    "public_key": "public_key",
                     "short_id": "short_id"
                 }
             }
@@ -184,7 +184,7 @@
         {
             "type": "tuic",
             "tag": "tuic-out-23232",
-            "server": "域名或者ip",
+            "server": "server",
             "server_port": 23232,
             "uuid": "uuid",
             "password": "password",
@@ -197,7 +197,7 @@
             {
                 "enabled": true,
                 "disable_sni": false,
-                "server_name": "域名",
+                "server_name": "server_name",
                 "insecure": false,
                 "alpn":
                 [
@@ -208,11 +208,12 @@
         {
             "type": "hysteria2",
             "tag": "hysteria2-out-22222",
-            "server": "域名或者ip",
+            "server": "server",
             "server_port": 22222,
             "up_mbps": 200,
             "down_mbps": 200,
-            "obfs": {
+            "obfs":
+            {
                 "type": "salamander",
                 "password": "password"
             },
@@ -222,7 +223,7 @@
             {
                 "enabled": true,
                 "disable_sni": false,
-                "server_name": "域名",
+                "server_name": "server_name",
                 "insecure": false,
                 "alpn":
                 [
@@ -263,12 +264,35 @@
         "rules":
         [
             {
-                "protocol": "dns",
+                "type": "logical",
+                "mode": "or",
+                "rules":
+                [
+                    {
+                        "protocol": "dns"
+                    },
+                    {
+                        "port": 53
+                    }
+                ],
                 "outbound": "dns-out"
             },
             {
-                "network": "udp",
-                "port": 443,
+                "type": "logical",
+                "mode": "or",
+                "rules":
+                [
+                    {
+                        "port": 853
+                    },
+                    {
+                        "network": "udp",
+                        "port": 443
+                    },
+                    {
+                        "protocol": "stun"
+                    }
+                ],
                 "outbound": "block"
             },
             {
@@ -276,10 +300,22 @@
                 "outbound": "block"
             },
             {
-                "rule_set":
+                "type": "logical",
+                "mode": "and",
+                "rules":
                 [
-                    "geoip-cn",
-                    "geosite-cn"
+                    {
+                        "rule_set": "geosite-geolocation-!cn",
+                        "invert": true
+                    },
+                    {
+                        "rule_set":
+                        [
+                            "geoip-cn",
+                            "geosite-cn",
+                            "geosite-category-companies@cn"
+                        ]
+                    }
                 ],
                 "outbound": "direct"
             },
@@ -332,6 +368,12 @@
                 "format": "binary",
                 "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
                 "download_detour": "auto"
+            },
+            {
+                "type": "remote",
+                "tag": "geosite-category-companies@cn",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-companies@cn.srs"
             },
             {
                 "tag": "geosite-category-ads-all",
