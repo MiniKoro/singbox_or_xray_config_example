@@ -26,7 +26,7 @@
         "hosts":
         {
             "domain:googleapis.cn": "googleapis.com",
-            "dns.google": "8.8.8.8"
+            "dns.google": ["8.8.8.8", "8.8.4.4"]
         },
         "servers":
         [
@@ -48,7 +48,7 @@
                     "geoip:cn"
                 ]
             },
-            "https://dns.google/dns-query",
+            "https://1.1.1.1/dns-query",
             "119.29.29.29",
             "localhost"
         ]
@@ -339,7 +339,7 @@
             "tag": "direct",
             "settings":
             {
-                "domainStrategy": "UseIP"
+                "domainStrategy": "UseIPv4"
             }
         },
         {
